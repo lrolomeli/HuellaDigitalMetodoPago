@@ -7,20 +7,16 @@ import javax.swing.JOptionPane;
 
 public class EnrollmentForm extends CaptureForm
 {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private DPFPEnrollment enroller = DPFPGlobal.getEnrollmentFactory().createEnrollment();
-	
-	EnrollmentForm(Frame owner) {
+
+	public EnrollmentForm(Frame owner) {
 		super(owner);
 	}
 	
 	@Override protected void init()
 	{
 		super.init();
-		this.setTitle("Fingerprint Enrollment");
+		this.setTitle("Lector de Huellas");
 		updateStatus();
 	}
 
@@ -32,7 +28,7 @@ public class EnrollmentForm extends CaptureForm
 		// Check quality of the sample and add to enroller if it's good
 		if (features != null) try
 		{
-			makeReport("The fingerprint feature set was created.");
+			makeReport("Agregando caracteristicas de la muestra.");
 			enroller.addFeatures(features);		// Add feature set to template.
 		}
 		catch (DPFPImageQualityException ex) { }
@@ -42,10 +38,17 @@ public class EnrollmentForm extends CaptureForm
 			// Check if template has been created.
 			switch(enroller.getTemplateStatus())
 			{
+				case TEMPLATE_STATUS_UNKNOWN:	// report success and stop capturing
+
+				break;
+				case TEMPLATE_STATUS_INSUFFICIENT:	// report success and stop capturing
+
+				break;
 				case TEMPLATE_STATUS_READY:	// report success and stop capturing
 					stop();
 					((FingerPrintReader)getOwner()).setTemplate(enroller.getTemplate());
-					setPrompt("Click Close, and then click Fingerprint Verification.");
+					setPrompt("Ya se ha registrado la huella, puede verificarla");
+					((FingerPrintReader)getOwner()).setVisible(true);
 					break;
 
 				case TEMPLATE_STATUS_FAILED:	// report failure and restart capturing
@@ -53,15 +56,9 @@ public class EnrollmentForm extends CaptureForm
 					stop();
 					updateStatus();
 					((FingerPrintReader)getOwner()).setTemplate(null);
-					JOptionPane.showMessageDialog(EnrollmentForm.this, "The fingerprint template is not valid. Repeat fingerprint enrollment.", "Fingerprint Enrollment", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(EnrollmentForm.this, "La muestra no corresponde. Repita registro de huella.", "Lector de Huellas", JOptionPane.ERROR_MESSAGE);
 					start();
 					break;
-			case TEMPLATE_STATUS_INSUFFICIENT:
-				break;
-			case TEMPLATE_STATUS_UNKNOWN:
-				break;
-			default:
-				break;
 			}
 		}
 	}
@@ -69,7 +66,7 @@ public class EnrollmentForm extends CaptureForm
 	private void updateStatus()
 	{
 		// Show number of samples needed.
-		setStatus(String.format("Fingerprint samples needed: %1$s", enroller.getFeaturesNeeded()));
+		setStatus(String.format("Muestras necesarias: %1$s", enroller.getFeaturesNeeded()));
 	}
 	
 }

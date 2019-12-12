@@ -6,10 +6,6 @@ import java.awt.*;
 
 public class VerificationForm extends CaptureForm
 {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private DPFPVerification verificator = DPFPGlobal.getVerificationFactory().createVerification();
 	
 	VerificationForm(Frame owner) {
@@ -37,9 +33,9 @@ public class VerificationForm extends CaptureForm
 				verificator.verify(features, ((FingerPrintReader)getOwner()).getTemplate());
 			updateStatus(result.getFalseAcceptRate());
 			if (result.isVerified())
-				makeReport("The fingerprint was VERIFIED.");
+				makeReport("La lectura de huella coincide.");
 			else
-				makeReport("The fingerprint was NOT VERIFIED.");
+				makeReport("No corresponde a la huella registrada.");
 		}
 	}
 	

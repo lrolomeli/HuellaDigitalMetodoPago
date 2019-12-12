@@ -15,97 +15,125 @@ import com.digitalpersona.onetouch.*;
  *
  * @author luisr
  */
-public class FingerPrintReader extends JFrame {
-    
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    public static String TEMPLATE_PROPERTY = "template";
-    private DPFPTemplate template;
-    private final JButton enroll = new JButton("Fingerprint Enrollment");
-    private final JButton verify = new JButton("Fingerprint Verification");
-    private final JButton quit = new JButton("close");
-    
-    FingerPrintReader() {
-        
-        super("Lector de Huellas");
-        setState(Frame.NORMAL);
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(true);
+public class FingerPrintReader extends JFrame{
 
-        Handler handler = new Handler();
-        enroll.addActionListener(handler);
-        verify.addActionListener(handler);
-        quit.addActionListener(handler);
-        
-        this.addPropertyChangeListener(TEMPLATE_PROPERTY, new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                verify.setEnabled(template != null);
-                if (evt.getNewValue() == evt.getOldValue()) {
-                    return;
-                }
-                if (template != null) {
-                    JOptionPane.showMessageDialog(FingerPrintReader.this, "The fingerprint template is ready for fingerprint verification.", "Fingerprint Enrollment", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
+	public static String TEMPLATE_PROPERTY = "template";
+	private DPFPTemplate template;
+	private final JButton enroll;
+	private final JButton verify;
+	private final JButton cancel;
+	private JFrame callingJFrame;
+	private Handler handler;
+	private JPanel center;
+	private JPanel bottom;
+	private EnrollmentForm eform;
+	private VerificationForm vform;
 
-        JPanel center = new JPanel();
-        center.setLayout(new GridLayout(4, 1, 0, 5));
-        center.setBorder(BorderFactory.createEmptyBorder(20, 20, 5, 20));
-        center.add(enroll);
-        center.add(verify);
-        
+	private FingerPrintReader() {
+		super("Lector de Huellas");
+		setState(Frame.NORMAL);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		setResizable(true);
 
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-        bottom.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-        bottom.add(quit);
+		enroll = new JButton("Fingerprint Enrollment");
+		verify = new JButton("Fingerprint Verification");
+		cancel = new JButton("cancelar");
+		handler = new Handler();
+		center = new JPanel();
+		bottom = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		verify.setEnabled(false);
+		enroll.addActionListener(handler);
+		verify.addActionListener(handler);
+		cancel.addActionListener(handler);
 
-        setLayout(new BorderLayout());
-        add(center, BorderLayout.CENTER);
-        add(bottom, BorderLayout.PAGE_END);
+		addPropertyChangeListener(FingerPrintReader.TEMPLATE_PROPERTY, new PCL());
 
-        pack();
-        setSize((int) (getSize().width * 1.6), getSize().height);
-        setLocationRelativeTo(null);
-        setTemplate(null);
-        setVisible(true);
-    }
+		center.setLayout(new GridLayout(4, 1, 0, 5));
+		center.setBorder(BorderFactory.createEmptyBorder(20, 20, 5, 20));
+		center.add(enroll);
+		center.add(verify);
 
-    private void onEnroll() {
-        EnrollmentForm form = new EnrollmentForm(this);
-        form.setVisible(true);
-    }
+		bottom.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+		bottom.add(cancel);
 
-    private void onVerify() {
-        VerificationForm form = new VerificationForm(this);
-        form.setVisible(true);
-    }
+		setLayout(new BorderLayout());
+		add(center, BorderLayout.CENTER);
+		add(bottom, BorderLayout.PAGE_END);
 
-    public DPFPTemplate getTemplate() {
-        return template;
-    }
+		pack();
+		setSize((int) (getSize().width * 1.6), getSize().height);
+		setLocationRelativeTo(null);
+		setTemplate(null);
 
-    public void setTemplate(DPFPTemplate template) {
-        DPFPTemplate old = this.template;
-        this.template = template;
-        firePropertyChange(TEMPLATE_PROPERTY, old, template);
-    }
-    
-    private class Handler implements ActionListener{
-        
-        @Override
-        public void actionPerformed(ActionEvent ev){
-            if(ev.getSource() == enroll)
-                onEnroll();
-            else if(ev.getSource() == verify)
-                onVerify();
-            else if(ev.getSource() == quit)
-                dispose();
-            else
-                return;
-        }
-        
-    }
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				if (JOptionPane.showConfirmDialog(FingerPrintReader.this,
+						"Seguro que deseas cerrar?") == JOptionPane.OK_OPTION) {
+					setVisible(false);
+					dispose();
+					callingJFrame.setVisible(true);
+				}
+			}
+		});
+
+		setVisible(true);
+	}
+
+	public FingerPrintReader(JFrame callingJFrame) {
+
+		this();
+		this.callingJFrame = callingJFrame;
+	}
+
+	private void onEnroll() {
+		eform = new EnrollmentForm(this);
+		eform.setVisible(true);
+	}
+
+	private void onVerify() {
+		vform = new VerificationForm(this);
+		vform.setVisible(true);
+	}
+	
+	private class PCL implements PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent evt) {
+			// Cuando haya un evento del tipo cambio de propiedad
+			// Se habilitara el boton de verify en caso de que se halla registrado una
+			// huella
+			if (getTemplate() != null){
+				eform.dispose();
+				JOptionPane.showMessageDialog(FingerPrintReader.this,
+                		"Huella Asociada",
+                		"MyPay Agregar Huella", JOptionPane.INFORMATION_MESSAGE);
+				verify.setEnabled(true);
+			}
+		}
+	}
+
+	private class Handler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			setVisible(false);
+			if (ev.getSource() == enroll)	
+				onEnroll();
+			else if (ev.getSource() == verify)
+				onVerify();
+			else if (ev.getSource() == cancel) {
+				dispose();
+				callingJFrame.setVisible(true);
+			}
+		}
+	}
+	
+	public DPFPTemplate getTemplate() {
+		return template;
+	}
+	
+	public void setTemplate(DPFPTemplate template) {
+		DPFPTemplate old = this.template;
+		this.template = template;
+		firePropertyChange(TEMPLATE_PROPERTY, old, template);
+	}
+	
 }

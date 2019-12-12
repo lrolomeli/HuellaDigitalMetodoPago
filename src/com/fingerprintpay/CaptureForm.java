@@ -8,13 +8,11 @@ import com.digitalpersona.onetouch.capture.*;
 import com.digitalpersona.onetouch.capture.event.*;
 import com.digitalpersona.onetouch.processing.*;
 
-
-public class CaptureForm extends JDialog {
-    
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+/*Este codigo es completamente parte del sdk del sensor digital persona*/
+/*Extiende de JDialog por lo tanto es una ventana que muestra un mensaje y nada mas.*/
+public class CaptureForm
+	extends JDialog
+{
 	private DPFPCapture capturer = DPFPGlobal.getCaptureFactory().createCapture();
 	private JLabel picture = new JLabel();
 	private JTextField prompt = new JTextField();
@@ -22,8 +20,8 @@ public class CaptureForm extends JDialog {
 	private JTextField status = new JTextField("[status line]");
 	
     public CaptureForm(Frame owner) {
-        super (owner, true);
-        setTitle("Fingerprint Enrollment");
+        super(owner, true);
+        setTitle("Lector de Huellas");
 
 		setLayout(new BorderLayout());
 		rootPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -55,7 +53,17 @@ public class CaptureForm extends JDialog {
 		
 		JButton quit = new JButton("Close");
         quit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { setVisible(false); }});
+            public void actionPerformed(ActionEvent e) {
+            	owner.setVisible(true);
+            	setVisible(false); 
+            	}
+            });
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+					setVisible(false);
+					owner.setVisible(true);
+			}
+		});
 
 		JPanel right = new JPanel(new BorderLayout());
 		right.setBackground(Color.getColor("control"));
@@ -96,8 +104,8 @@ public class CaptureForm extends JDialog {
 		capturer.addDataListener(new DPFPDataAdapter() {
 			@Override public void dataAcquired(final DPFPDataEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("The fingerprint sample was captured.");
-					setPrompt("Scan the same fingerprint again.");
+					makeReport("La huella fue capturada correctamente");
+					setPrompt("Vuelva a colocar la misma huella.");
 					process(e.getSample());
 				}});
 			}
@@ -105,24 +113,24 @@ public class CaptureForm extends JDialog {
 		capturer.addReaderStatusListener(new DPFPReaderStatusAdapter() {
 			@Override public void readerConnected(final DPFPReaderStatusEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-		 			makeReport("The fingerprint reader was connected.");
+		 			makeReport("El lector ha sido conectado.");
 				}});
 			}
 			@Override public void readerDisconnected(final DPFPReaderStatusEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("The fingerprint reader was disconnected.");
+					makeReport("El lector ha sido desconectado.");
 				}});
 			}
 		});
 		capturer.addSensorListener(new DPFPSensorAdapter() {
 			@Override public void fingerTouched(final DPFPSensorEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("The fingerprint reader was touched.");
+					makeReport("Has colocado la huella en el sensor.");
 				}});
 			}
 			@Override public void fingerGone(final DPFPSensorEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("The finger was removed from the fingerprint reader.");
+					makeReport("Has retirado la huella del sensor.");
 				}});
 			}
 		});
@@ -130,9 +138,9 @@ public class CaptureForm extends JDialog {
 			@Override public void onImageQuality(final DPFPImageQualityEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
 					if (e.getFeedback().equals(DPFPCaptureFeedback.CAPTURE_FEEDBACK_GOOD))
-						makeReport("The quality of the fingerprint sample is good.");
+						makeReport("La huella se registro con buena calidad.");
 					else
-						makeReport("The quality of the fingerprint sample is poor.");
+						makeReport("No es buena la calidad de la huella registra de nuevo.");
 				}});
 			}
 		});
@@ -147,7 +155,7 @@ public class CaptureForm extends JDialog {
 	protected void start()
 	{
 		capturer.startCapture();
-		setPrompt("Using the fingerprint reader, scan your fingerprint.");
+		setPrompt("Lector listo para capturar, agrega tu huella.");
 	}
 
 	protected void stop()
@@ -183,6 +191,5 @@ public class CaptureForm extends JDialog {
 			return null;
 		}
 	}
-	
 	
 }
