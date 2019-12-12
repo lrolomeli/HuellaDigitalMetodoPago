@@ -67,12 +67,11 @@ public class FingerPrintReader extends JFrame{
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
-				if (JOptionPane.showConfirmDialog(FingerPrintReader.this,
-						"Seguro que deseas cerrar?") == JOptionPane.OK_OPTION) {
+				
 					setVisible(false);
 					dispose();
 					callingJFrame.setVisible(true);
-				}
+				
 			}
 		});
 

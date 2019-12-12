@@ -71,11 +71,11 @@ public class VentanaPrincipal{
 	        	
 	            if(ev.getSource() == movimientos) 
 	            {
-	                new FingerPrintReader(ventanaPrincipal);
+	                new Movimientos(ventanaPrincipal);
 	            }
 	            else if(ev.getSource() == cuentaMyPay)
 	            {
-	            	new FingerPrintReader(ventanaPrincipal);
+	            	new CuentaMyPay(ventanaPrincipal);
 	            }
 	                
 	        }
