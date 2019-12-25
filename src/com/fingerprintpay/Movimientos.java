@@ -98,8 +98,7 @@ public class Movimientos{
 	        	
 	            if(ev.getSource() == cobro) 
 	            {
-	            	movimientos.dispose();
-	            	callingJFrame.setVisible(true);
+	            	new Cobro(movimientos);
 	            }
 	            else if(ev.getSource() == devolucion)
 	            {

@@ -3,24 +3,43 @@ package com.fingerprintpay;
 import com.digitalpersona.onetouch.*;
 import com.digitalpersona.onetouch.processing.*;
 import java.awt.*;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+
+//EnrollmentForm ejecuta los metodos de capture form
+//La manera de ejecutarlos es mediante el constructor padre.
+
+//Todavia no entiendo como se mandan llamar los metodos de enrollment form
 public class EnrollmentForm extends CaptureForm
 {
-	private DPFPEnrollment enroller = DPFPGlobal.getEnrollmentFactory().createEnrollment();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	public EnrollmentForm(Frame owner) {
+	private DPFPEnrollment enroller = DPFPGlobal.getEnrollmentFactory().createEnrollment();
+	
+	//Dejar esta variable "dinamica"
+	private FingerPrintReader fpReader;
+	
+	public EnrollmentForm(Frame owner, FingerPrintReader fpReader) {
+		//Esta es la llamada que inicia el metodo init 
 		super(owner);
+		this.fpReader = fpReader;
 	}
 	
-	@Override protected void init()
+	@Override 
+	protected void init()
 	{
 		super.init();
 		this.setTitle("Lector de Huellas");
 		updateStatus();
 	}
 
-	@Override protected void process(DPFPSample sample) {
+	@Override 
+	protected void process(DPFPSample sample) {
 		super.process(sample);
 		// Process the sample and create a feature set for the enrollment purpose.
 		DPFPFeatureSet features = extractFeatures(sample, DPFPDataPurpose.DATA_PURPOSE_ENROLLMENT);
@@ -46,16 +65,16 @@ public class EnrollmentForm extends CaptureForm
 				break;
 				case TEMPLATE_STATUS_READY:	// report success and stop capturing
 					stop();
-					((FingerPrintReader)getOwner()).setTemplate(enroller.getTemplate());
+					fpReader.setTemplate(enroller.getTemplate());
 					setPrompt("Ya se ha registrado la huella, puede verificarla");
-					((FingerPrintReader)getOwner()).setVisible(true);
+					((JFrame)getOwner()).setVisible(true);
 					break;
 
 				case TEMPLATE_STATUS_FAILED:	// report failure and restart capturing
 					enroller.clear();
 					stop();
 					updateStatus();
-					((FingerPrintReader)getOwner()).setTemplate(null);
+					fpReader.setTemplate(null);
 					JOptionPane.showMessageDialog(EnrollmentForm.this, "La muestra no corresponde. Repita registro de huella.", "Lector de Huellas", JOptionPane.ERROR_MESSAGE);
 					start();
 					break;

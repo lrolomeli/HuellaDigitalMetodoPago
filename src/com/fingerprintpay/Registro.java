@@ -116,7 +116,7 @@ public class Registro {
 	            
 	            else if(ev.getSource() == asociarHuella) 
 	            {
-	                new FingerPrintReader(registro);
+	            	new AsociarHuella(registro);
 	            }
 	            
 	            else

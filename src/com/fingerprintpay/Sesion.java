@@ -90,7 +90,7 @@ public class Sesion {
 	            else if(ev.getSource() == asociarHuella) 
 	            {
 	            	sesion.setVisible(false);
-	            	new FingerPrintReader(sesion);
+	            	new AsociarHuella(sesion);
 	            }
 	            else if (ev.getSource() == cerrarSesion) {
 	            	if (JOptionPane.showConfirmDialog(sesion,

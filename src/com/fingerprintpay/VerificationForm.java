@@ -6,10 +6,17 @@ import java.awt.*;
 
 public class VerificationForm extends CaptureForm
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DPFPVerification verificator = DPFPGlobal.getVerificationFactory().createVerification();
+	//Dejar esta variable "dinamica"
+	private FingerPrintReader fpReader;
 	
-	VerificationForm(Frame owner) {
+	VerificationForm(Frame owner, FingerPrintReader fpReader) {
 		super(owner);
+		this.fpReader = fpReader;
 	}
 	
 	@Override protected void init()
@@ -30,7 +37,7 @@ public class VerificationForm extends CaptureForm
 		{
 			// Compare the feature set with our template
 			DPFPVerificationResult result = 
-				verificator.verify(features, ((FingerPrintReader)getOwner()).getTemplate());
+				verificator.verify(features, fpReader.getTemplate());
 			updateStatus(result.getFalseAcceptRate());
 			if (result.isVerified())
 				makeReport("La lectura de huella coincide.");

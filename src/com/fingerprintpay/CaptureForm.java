@@ -2,6 +2,7 @@ package com.fingerprintpay;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import com.digitalpersona.onetouch.*;
 import com.digitalpersona.onetouch.capture.*;
@@ -13,6 +14,10 @@ import com.digitalpersona.onetouch.processing.*;
 public class CaptureForm
 	extends JDialog
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DPFPCapture capturer = DPFPGlobal.getCaptureFactory().createCapture();
 	private JLabel picture = new JLabel();
 	private JTextField prompt = new JTextField();
@@ -84,12 +89,18 @@ public class CaptureForm
 		add(center, BorderLayout.CENTER);
 		add(bottom, BorderLayout.PAGE_END);
 		
-		this.addComponentListener(new ComponentAdapter() {
-			@Override public void componentShown(ComponentEvent e) {
+		//Al abrir la ventana o mostrar la ventana de capture form
+		//Se comienza a ejecutar el metodo de init y start
+		//Y al cerrar la ventana se ejecuta el metodo stop
+		addComponentListener(new ComponentAdapter() {
+			@Override 
+			public void componentShown(ComponentEvent e) {
+				//El abrir la ventana
 				init();
 				start();
 			}
-			@Override public void componentHidden(ComponentEvent e) {
+			@Override 
+			public void componentHidden(ComponentEvent e) {
 				stop();
 			}
 			
