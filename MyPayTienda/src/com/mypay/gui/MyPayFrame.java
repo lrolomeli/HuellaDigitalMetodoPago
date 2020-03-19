@@ -23,13 +23,17 @@ public class MyPayFrame extends JFrame{
 		controller = new Controller();
 		myPayPanel = new MyPayPanel();
 		fingerPrintReader = new FingerPrintReader(this);
+		fingerPrintReader.init();
 		
 		fingerPrintReader.setVerifiedUserListener(new VerifiedUserListener(){
 			public void usuarioVerificado(VerifiedUserEvent vuev){
 				connect();
 				try {
-					fingerPrintReader.setVisible(true);
-					controller.cobrar();
+					fingerPrintReader.setVisible(false);
+					fingerPrintReader.stop();
+					if(!controller.cobrar()) {
+						JOptionPane.showMessageDialog(MyPayFrame.this, "No cuentas con saldo suficiente.");
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -41,10 +45,13 @@ public class MyPayFrame extends JFrame{
 		
 		myPayPanel.setMovimientoListener(new MovimientoListener() {
 			public void verificar(MovimientoEvent moev) {
+				fingerPrintReader.getLogArea().selectAll();
+				fingerPrintReader.getLogArea().replaceSelection("");
+				fingerPrintReader.stop();
 				connect();
 				try {
 					controller.verificar(moev);
-					fingerPrintReader.init();
+					fingerPrintReader.start();
 					fingerPrintReader.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

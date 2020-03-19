@@ -9,8 +9,6 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import com.digitalpersona.onetouch.*;
@@ -62,10 +60,7 @@ public class DigitalPersona extends JDialog
 		
 		JButton quit = new JButton("Cerrar");
         quit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { 
-            	setVisible(false);
-            	stop();
-            }});
+            public void actionPerformed(ActionEvent e) { setVisible(false); }});
 
 		JPanel right = new JPanel(new BorderLayout());
 		right.setBackground(Color.getColor("control"));
@@ -85,15 +80,6 @@ public class DigitalPersona extends JDialog
 		setLayout(new BorderLayout());
 		add(center, BorderLayout.CENTER);
 		add(bottom, BorderLayout.PAGE_END);
-		
-		addWindowListener(new WindowAdapter() {
-
-			public void windowClosing(WindowEvent e) {
-				setVisible(false);
-				stop();
-			}
-			
-		});
 		
 		pack();
         setLocationRelativeTo(null);
@@ -145,6 +131,7 @@ public class DigitalPersona extends JDialog
 				}});
 			}
 		});
+		start();
 	}
 
 	protected void process(DPFPSample sample)
@@ -192,10 +179,6 @@ public class DigitalPersona extends JDialog
 		} catch (DPFPImageQualityException e) {
 			return null;
 		}
-	}
-	
-	public JTextArea getLogArea() {
-		return log;
 	}
 	
 	
