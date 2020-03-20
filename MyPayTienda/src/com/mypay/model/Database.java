@@ -39,33 +39,36 @@ public class Database {
 	}
 	
 	public Float getSaldo(int idUsuario) throws SQLException {
+		Float f = null;
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("select saldo from Usuario where idUsuario ="+idUsuario);
         if(rs.next())
         {
-        	return rs.getFloat("saldo");
+        	f = rs.getFloat("saldo");
         }
-        else
-        	return null;
+        	st.close();
+        	return f;
 	}
 	
 	public byte[] getFingerPrint(int idUsuario) throws SQLException {
+		byte[] fp = null;
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("select huella from Usuario where idUsuario ="+idUsuario);
         if(rs.next())
         {
-        	return rs.getBytes("huella");
+        	fp = rs.getBytes("huella");
         }
-        else
-        	return null;
+        st.close();
+        return fp;
 		
 	}
 	
-	public void transaction(int idUsuario, float saldo, float cantidad, boolean tipo) throws SQLException {
+	public boolean transaction(int idUsuario, float saldo, float cantidad, boolean tipo) throws SQLException {
 		final String updateUser = "update Usuario set saldo = ? where idUsuario = ?";
 		final String insertTran = "insert into Movimiento(registro, tipo, cantidad, idUsuario_fk) values(CURRENT_TIMESTAMP,?,?,?)";
 		PreparedStatement uu=null, it=null;
 		float nuevoSaldo = (tipo) ? saldo+cantidad : saldo-cantidad;
+		boolean bool = false;
     	conn.setAutoCommit(false);
     	try {
             uu = conn.prepareStatement(updateUser);
@@ -80,7 +83,7 @@ public class Database {
     		it.setInt(3, idUsuario);
     		it.execute();
     		conn.commit();
-    		System.out.println("transaccion exitosa");
+    		bool = true;
 		}catch (Exception e) {
 			conn.rollback();
 		}finally {
@@ -90,8 +93,9 @@ public class Database {
 			if(it!=null) {
 				it.close();
 			}
+			
 		}
-
+    	return bool;
         //conn.setAutoCommit(false);
 		//conn.commit();
         //String query = "insert into Usuario(huella, saldo) values (?, ?)";

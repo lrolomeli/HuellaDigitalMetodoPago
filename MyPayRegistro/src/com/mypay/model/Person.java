@@ -16,12 +16,13 @@ public class Person {
     private String lastName;
     private Gender gender;
     private Date birthDate ;
-    private static final int MANOS = 2;
-    private static final int DEDOS = 5;
-    private final FingerPrint[][] fingerPrints; 
+    //private static final int MANOS = 2;
+    //private static final int DEDOS = 5;
+    private FingerPrint fingerPrint;
+    //private final FingerPrint[][] fingerPrints; 
     
     private Person(){
-        fingerPrints = new FingerPrint[MANOS][DEDOS];
+        //fingerPrints = new FingerPrint[MANOS][DEDOS];
     }
     
     public Person(String firstName, String lastName, Gender gender, Date birthDate, FingerPrint fingerPrint){
@@ -30,16 +31,17 @@ public class Person {
         this.lastName = lastName;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.fingerPrints[Hand.RIGHT.getNumHand()][Finger.INDEX.getNumFinger()] = fingerPrint;
+        this.fingerPrint = fingerPrint;
+        //this.fingerPrints[Hand.RIGHT.getNumHand()][Finger.INDEX.getNumFinger()] = fingerPrint;
     }
-    
+    /*
     public void agregarHuella(Finger finger, Hand hand){
         if(null == fingerPrints[hand.getNumHand()][finger.getNumFinger()])
             fingerPrints[hand.getNumHand()][finger.getNumFinger()] = new FingerPrint(hand, finger);
         else
             System.out.println("Ya se registro una huella para el dedo " + finger + " de la mano " + hand);
     }
-
+     */
     public String getFirstName() {
         return firstName;
     }
@@ -68,11 +70,19 @@ public class Person {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(java.sql.Date birthDate) {
         this.birthDate = birthDate;
     }
 
-    @Override
+    public FingerPrint getFingerPrint() {
+		return fingerPrint;
+	}
+
+	public void setFingerPrint(FingerPrint fingerPrint) {
+		this.fingerPrint = fingerPrint;
+	}
+
+	@Override
     public String toString() {
         return "Persona{" + "nombre=" + firstName + ", apellido=" + lastName + ", genero=" + gender + ", fechaDeNacimiento=" + birthDate + '}';
     }

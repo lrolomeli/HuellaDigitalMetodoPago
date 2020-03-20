@@ -38,25 +38,30 @@ public class Controller {
 		Controller.template = template;
 	}
 	
-	public void verificar(MovimientoEvent moev) throws Exception {
+	public boolean verificar(MovimientoEvent moev) throws Exception {
 		
 		idUsuario = moev.getIdUsuario();
 		cantidad = moev.getCantidad();
 		tipo = moev.isTipo();
 		byte[] data = db.getFingerPrint(idUsuario);
-		template = DPFPGlobal.getTemplateFactory().createTemplate();
-		template.deserialize(data);
+		if(null!=data) {
+			template = DPFPGlobal.getTemplateFactory().createTemplate();
+			template.deserialize(data);
+			return true;
+		}
+		return false;
 		
 	}
 	
 	public boolean cobrar() throws Exception {		
 		Float saldo = db.getSaldo(idUsuario);
 		if(null!=saldo) {
-			if(saldo.floatValue() > cantidad) {
-				db.transaction(idUsuario, saldo.floatValue(), cantidad, tipo);
+			if(cantidad > saldo.floatValue()) {
+				return false;
 			}
 			else {
-				return false;
+				db.transaction(idUsuario, saldo.floatValue(), cantidad, tipo);
+				
 			}
 				
 		}
@@ -64,15 +69,17 @@ public class Controller {
 			
 	}
 	
-	public void abonar(MovimientoEvent moev) throws Exception {
-		
+	public boolean abonar(MovimientoEvent moev) throws Exception {
+		boolean bool=false;
 		idUsuario = moev.getIdUsuario();
 		cantidad = moev.getCantidad();
 		tipo = moev.isTipo();
 		//int tipo = (moev.isTipo()) ? 1 : 0;
 		Float saldo = db.getSaldo(idUsuario);
-		if(null!=saldo)
-			db.transaction(idUsuario, saldo.floatValue(), cantidad, tipo);
+		if(null!=saldo) {
+			bool = db.transaction(idUsuario, saldo.floatValue(), cantidad, tipo);	
+		}
+		return bool;
 		
 	}
 	

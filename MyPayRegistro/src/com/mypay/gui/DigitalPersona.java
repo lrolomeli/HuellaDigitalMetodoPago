@@ -9,12 +9,15 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import com.digitalpersona.onetouch.*;
 import com.digitalpersona.onetouch.capture.*;
 import com.digitalpersona.onetouch.capture.event.*;
 import com.digitalpersona.onetouch.processing.*;
+import com.mypay.controller.Controller;
 
 
 public class DigitalPersona extends JDialog
@@ -60,7 +63,18 @@ public class DigitalPersona extends JDialog
 		
 		JButton quit = new JButton("Cerrar");
         quit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { setVisible(false); }});
+            public void actionPerformed(ActionEvent e) {
+            	clean();
+            }
+        });
+        
+		addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				clean();
+			}
+			
+		});
 
 		JPanel right = new JPanel(new BorderLayout());
 		right.setBackground(Color.getColor("control"));
@@ -84,6 +98,11 @@ public class DigitalPersona extends JDialog
 		pack();
         setLocationRelativeTo(null);
 	}
+    
+    protected void clean() {
+		stop();
+		setVisible(false);
+    }
 
 	protected void init()
 	{
@@ -91,7 +110,7 @@ public class DigitalPersona extends JDialog
 			@Override public void dataAcquired(final DPFPDataEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
 					makeReport("El sensor ha leido la huella.");
-					setPrompt("No es la huella correcta. Coloca la huella adecuada.");
+					setPrompt("Huella leida. Vuelve a colocar la misma huella.");
 					process(e.getSample());
 					
 				}});
@@ -112,12 +131,12 @@ public class DigitalPersona extends JDialog
 		capturer.addSensorListener(new DPFPSensorAdapter() {
 			@Override public void fingerTouched(final DPFPSensorEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("<3");
+					//makeReport("<3");
 				}});
 			}
 			@Override public void fingerGone(final DPFPSensorEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {	public void run() {
-					makeReport("</3");
+					//makeReport("</3");
 				}});
 			}
 		});
@@ -131,7 +150,6 @@ public class DigitalPersona extends JDialog
 				}});
 			}
 		});
-		start();
 	}
 
 	protected void process(DPFPSample sample)
@@ -144,7 +162,7 @@ public class DigitalPersona extends JDialog
 	protected void start()
 	{
 		capturer.startCapture();
-		setPrompt("El lector esta listo para capturar huellas.");
+		setPrompt("Captura tu huella y olvidate de cargar efectivo.");
 	}
 
 	protected void stop()
@@ -179,6 +197,10 @@ public class DigitalPersona extends JDialog
 		} catch (DPFPImageQualityException e) {
 			return null;
 		}
+	}
+	
+	public JTextArea getLogArea() {
+		return log;
 	}
 	
 	

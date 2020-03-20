@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -164,23 +165,88 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 		this.registrationListener = registrationListener;
 	}
 	
+	public void displayErrorMessage(String errorMessage) {
+		JOptionPane.showMessageDialog(this, errorMessage);
+	}
+	
 	public JButton getFPButton() {
 		return registerFPButton;
 	}
+	
+	public String getFirstName() {
+		String s = firstNameField.getText();
+		if(!s.isEmpty()) return s;
+		else return null;
+	}
+	
+	public String getLastName() {
+		String s = lastNameField.getText();
+		if(!s.isEmpty()) return s;
+		else return null;
+	}
+	
+	public Date getBirthDate() {
+		return birthDateCalendar.getDate();
+	}
+	
+	public String getGender() {
+		return genderGroup.getSelection().getActionCommand();
+	}
 
+	public String getUserName() {
+		String s = userNameField.getText();
+		if(!s.isEmpty()) return s;
+		else return null;
+	}
+	
+	public String getPassword() {
+		String s = new String(passwordField.getPassword());
+		if(!s.isEmpty()) return s;
+		else return null;
+	}
+	
+	public void cleanMess() {
+		firstNameField.setText("");
+		lastNameField.setText("");
+		userNameField.setText("");
+		passwordField.setText("");
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if(registrationButton==e.getSource()) {
-			String firstName = firstNameField.getText();
-			String lastName = lastNameField.getText();
-			Date birthDate = birthDateCalendar.getDate();
-			String gender = genderGroup.getSelection().getActionCommand();
-			String userName = userNameField.getText();
-			String password = new String(passwordField.getPassword());
-			RegistrationEvent rev = new RegistrationEvent(this, firstName, lastName, birthDate, gender, userName, password);
-			
-			if(null != registrationListener) {
-				registrationListener.registrationEventOcurred(rev);
+			try {
+				String firstName = getFirstName();	
+				if(firstName==null) {
+					displayErrorMessage("Escribe tu nombre");
+					return;
+				}
+				String lastName = getLastName();	
+				if(lastName==null) {
+					displayErrorMessage("Escribe tu apellido");
+					return;
+				}
+				Date birthDate = getBirthDate();
+				String gender = getGender();
+				String userName = getUserName();
+				if(userName==null) {
+					displayErrorMessage("Elige un nombre de usuario");
+					return;
+				}
+				String password = getPassword();
+				if(password==null){
+					displayErrorMessage("No se aceptan contrasenas vacias");
+					return;
+				}
+
+				if(null != registrationListener) {
+					RegistrationEvent rev = new RegistrationEvent(this, firstName, lastName, birthDate, gender, userName, password);					
+					registrationListener.registrationEventOcurred(rev);
+				}
+			}catch (Exception ex) {
+				displayErrorMessage("Verifica que tus datos sean correctos");
+				ex.printStackTrace();
 			}
+
 		}
 		else if(registerFPButton==e.getSource()){
 			RegistrarHuellaEvent rhev = new RegistrarHuellaEvent(this);

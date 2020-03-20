@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import com.digitalpersona.onetouch.*;
 import com.digitalpersona.onetouch.processing.DPFPEnrollment;
 import com.digitalpersona.onetouch.processing.DPFPImageQualityException;
+import com.digitalpersona.onetouch.processing.DPFPTemplateStatus;
 import com.mypay.controller.Controller;
 
 public class FingerPrintReader extends DigitalPersona{
@@ -16,6 +17,7 @@ public class FingerPrintReader extends DigitalPersona{
 	
 	public FingerPrintReader(Frame owner) {
 		super(owner);
+		super.init();
 	}
 	
 	public void setFingerPrintListener(FingerPrintListener listener) {
@@ -30,6 +32,11 @@ public class FingerPrintReader extends DigitalPersona{
 		updateStatus();
 	}
 	
+	public void start() {
+		super.start();
+		updateStatus();
+	}
+	
 	//Esta funcion se llama cuando el sensor lee una huella
 	@Override 
 	public void process(DPFPSample sample) {
@@ -40,44 +47,40 @@ public class FingerPrintReader extends DigitalPersona{
 		// Check quality of the sample and add to enroller if it's good
 		if (features != null) try
 		{
-			makeReport("The fingerprint feature set was created.");
+			makeReport("Se ha creado correctamente el registro de tu huella.");
 			enroller.addFeatures(features);		// Add feature set to template.
 		}
 		catch (DPFPImageQualityException ex) { }
 		finally {
 			updateStatus();
-			// Check if template has been created.
-			switch(enroller.getTemplateStatus())
-			{
-				case TEMPLATE_STATUS_READY:	// report success and stop capturing
-					stop();
-					Controller.setTemplate(enroller.getTemplate());
-					if(null!=listener) {
-						FingerPrintEvent ev = new FingerPrintEvent(FingerPrintReader.this);
-						listener.fingerPrintReadyToSend(ev);
-					}
-					this.setVisible(false);
-					setPrompt("Click Close, and then click Fingerprint Verification.");
-					break;
-
-				case TEMPLATE_STATUS_FAILED:	// report failure and restart capturing
+			if(enroller.getTemplateStatus()==DPFPTemplateStatus.TEMPLATE_STATUS_READY) {
+				stop();
+				Controller.setTemplate(enroller.getTemplate());
+				
+				if(null!=listener) {
 					enroller.clear();
-					stop();
 					updateStatus();
-					Controller.setTemplate(null);
-					JOptionPane.showMessageDialog(FingerPrintReader.this, "The fingerprint template is not valid. Repeat fingerprint enrollment.", "Fingerprint Enrollment", JOptionPane.ERROR_MESSAGE);
-					start();
-					break;
-			case TEMPLATE_STATUS_INSUFFICIENT:
-				break;
-			case TEMPLATE_STATUS_UNKNOWN:
-				break;
-			default:
-				break;
-
+					FingerPrintEvent ev = new FingerPrintEvent(FingerPrintReader.this);
+					listener.fingerPrintReadyToSend(ev);
+				}
+			}
+			else if(enroller.getTemplateStatus()==DPFPTemplateStatus.TEMPLATE_STATUS_FAILED){
+				enroller.clear();
+				stop();
+				updateStatus();
+				Controller.setTemplate(null);
+				JOptionPane.showMessageDialog(FingerPrintReader.this, "La huella no corresponde o no se capturo bien. Intenta otra vez.", "Registro de Huella", JOptionPane.ERROR_MESSAGE);
+				start();
 			}
 
 		}
+	}
+	
+	public void clean() {
+		super.clean();
+		enroller.clear();
+		updateStatus();
+		Controller.setTemplate(null);
 	}
 	
 	private void updateStatus()

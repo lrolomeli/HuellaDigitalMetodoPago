@@ -28,14 +28,18 @@ public class MyPayFrame extends JFrame{
 		fingerPrintReader.setVerifiedUserListener(new VerifiedUserListener(){
 			public void usuarioVerificado(VerifiedUserEvent vuev){
 				connect();
+				fingerPrintReader.setVisible(false);
+				fingerPrintReader.stop();
 				try {
-					fingerPrintReader.setVisible(false);
-					fingerPrintReader.stop();
-					if(!controller.cobrar()) {
+					if(controller.cobrar()) {
+						JOptionPane.showMessageDialog(MyPayFrame.this, "Transaccion Completa.");
+					}
+					else {
 						JOptionPane.showMessageDialog(MyPayFrame.this, "No cuentas con saldo suficiente.");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(MyPayFrame.this, "No existe un usuario con este id");
+					//e.printStackTrace();
 				}
 				Controller.setTemplate(null);
 				controller.close();
@@ -50,9 +54,15 @@ public class MyPayFrame extends JFrame{
 				fingerPrintReader.stop();
 				connect();
 				try {
-					controller.verificar(moev);
-					fingerPrintReader.start();
-					fingerPrintReader.setVisible(true);
+					
+					if(controller.verificar(moev)) {
+						fingerPrintReader.start();
+						fingerPrintReader.setVisible(true);
+					}
+					else {
+						JOptionPane.showMessageDialog(MyPayFrame.this, "No se encontro el usuario.");
+					}
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -61,9 +71,15 @@ public class MyPayFrame extends JFrame{
 			public void abonar(MovimientoEvent moev) {
 				connect();
 				try {
-					controller.abonar(moev);
+					if(controller.abonar(moev)) {
+						JOptionPane.showMessageDialog(MyPayFrame.this, "Transaccion Hecha.");
+					}
+					else {
+						JOptionPane.showMessageDialog(MyPayFrame.this, "No se completo la Transaccion.");
+					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(MyPayFrame.this, "No existe un usuario con este id");
+					//e.printStackTrace();
 				}
 				controller.close();
 			}

@@ -157,7 +157,7 @@ public class DigitalPersona extends JDialog
 	protected void start()
 	{
 		capturer.startCapture();
-		setPrompt("El lector esta listo para capturar huellas.");
+		setPrompt("Gracias por utilizar este medio de pago amigable con el medio ambiente.");
 	}
 
 	protected void stop()

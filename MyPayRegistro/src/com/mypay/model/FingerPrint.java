@@ -56,7 +56,7 @@ public class FingerPrint {
         this.hand = mano;
     }
 
-	public byte[] getFingerPrint() {
+	public byte[] getFPArray() {
 		return fingerPrint;
 	}
 

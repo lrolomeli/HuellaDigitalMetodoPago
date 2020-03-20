@@ -15,18 +15,25 @@ public class Controller {
 	private static DPFPTemplate template;
 	
 	public FingerPrint getFingerPrint() {
-		System.out.println(template.serialize());
 		FingerPrint fp = new FingerPrint(template.serialize());
 		return fp;
 	}
-	
-	public void registerUser() throws Exception {
-		connect();
-		db.registerUser(getFingerPrint());
-		close();
+	/*
+	public int registerUser() throws SQLException {
+		if(null!=template) {
+			connect();
+			int userAccountNumber = db.registerUser(getFingerPrint());
+			close();
+			return userAccountNumber;
+		}
+		else
+		{
+			return 0;
+		}
+
 	}
-	
-	public void addPerson(RegistrationEvent ev) {
+	*/
+	public int registerUser(RegistrationEvent ev) throws SQLException {
 		String firstName = ev.getFirstName();
 		String lastName = ev.getLastName();
 		Date birthDate = ev.getBirthDate();
@@ -46,10 +53,18 @@ public class Controller {
 			genderCat = Gender.NOT_SPECIFIED;
 		}
 		
+		if(null!=template) {
+			User user = new User(firstName, lastName, genderCat, birthDate, userName, password, getFingerPrint());
+			connect();
+			int userAccountNumber = db.registerUser(user);
+			close();
+			return userAccountNumber;
+		}
+		else
+		{
+			return 0;
+		}
 		
-		User user = new User(firstName, lastName, genderCat, birthDate, userName, password, getFingerPrint());
-		
-		db.addUser(user);
 		
 		//import java.text.SimpleDateFormat;
 		//SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -58,7 +73,7 @@ public class Controller {
 		
 	}
 
-	public void connect() throws Exception {
+	public void connect() throws SQLException {
 		db.connect();
 	}
 	

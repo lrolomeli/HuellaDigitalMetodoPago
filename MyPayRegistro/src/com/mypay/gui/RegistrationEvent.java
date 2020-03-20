@@ -49,7 +49,7 @@ public class RegistrationEvent extends EventObject {
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate) {
+	public void setBirthDate(java.sql.Date birthDate) {
 		this.birthDate = birthDate;
 	}
 
