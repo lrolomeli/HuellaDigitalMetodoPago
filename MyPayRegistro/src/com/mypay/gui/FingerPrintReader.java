@@ -86,7 +86,7 @@ public class FingerPrintReader extends DigitalPersona{
 	private void updateStatus()
 	{
 		// Show number of samples needed.
-		setStatus(String.format("Fingerprint samples needed: %1$s", enroller.getFeaturesNeeded()));
+		setStatus(String.format("Cantidad de veces que debes colocar tu huella: %1$s", enroller.getFeaturesNeeded()));
 	}
 	
 }

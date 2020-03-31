@@ -1,5 +1,7 @@
 package com.mypay.gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -17,7 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 
 public class RegistrationPanel extends JPanel implements ActionListener {
 
@@ -26,7 +28,6 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 	private JLabel lastNameLabel;
 	private JTextField lastNameField;
 	private JLabel birthDateLabel;
-	private JCalendar birthDateCalendar;
 	private JLabel genderLabel;
 	private JRadioButton maleRadio;
 	private JRadioButton femaleRadio;
@@ -39,29 +40,57 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 	private JButton registrationButton;
 	private JButton registerFPButton;
 	private RegistrationListener registrationListener;
+	private JDateChooser birthDateChooser;
 	
 	public RegistrationPanel() {
-		firstNameLabel = new JLabel("Nombre:");
+		firstNameLabel = new JLabel("Nombre");
 		firstNameField = new JTextField(20);
-		lastNameLabel = new JLabel("Apellido:   ");
+		lastNameLabel = new JLabel("Apellido");
 		lastNameField = new JTextField(20);
-		birthDateLabel = new JLabel("Fecha de Nacimiento:");
-		birthDateCalendar = new JCalendar();
-		genderLabel = new JLabel("Genero:");
-		userNameLabel = new JLabel("Usuario:");
+		
+		birthDateLabel = new JLabel("Fecha de Nacimiento");		
+		birthDateChooser = new JDateChooser();
+		birthDateChooser.setFont(new Font("Panel.font", Font.PLAIN, 12));
+		
+		
+		genderLabel = new JLabel("Genero");
+		userNameLabel = new JLabel("Usuario");
 		userNameField = new JTextField(20);
-		passwordLabel = new JLabel("Contrasena:");
+		passwordLabel = new JLabel("Contrasena");
 		passwordField = new JPasswordField(20);
 		registrationButton = new JButton("DAR DE ALTA");
 		registerFPButton = new JButton("REGISTRA TU HUELLA");
+		
+		registrationButton.setBackground(Color.white);
+		registerFPButton.setBackground(Color.white);
+		
+		firstNameLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		lastNameLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		birthDateLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		genderLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		userNameLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		passwordLabel.setFont(new Font("Serif", Font.BOLD, 15));
+		
+		firstNameField.setFont(new Font("Panel.font", Font.PLAIN, 14));
+		firstNameField.setHorizontalAlignment(JTextField.CENTER);
+		lastNameField.setFont(new Font("Panel.font", Font.PLAIN, 14));
+		lastNameField.setHorizontalAlignment(JTextField.CENTER);
+		userNameField.setFont(new Font("Panel.font", Font.PLAIN, 14));
+		userNameField.setHorizontalAlignment(JTextField.CENTER);
+		passwordField.setFont(new Font("Panel.font", Font.PLAIN, 14));
+		passwordField.setHorizontalAlignment(JTextField.CENTER);
+		
 		
 		registrationButton.addActionListener(this);
 		registerFPButton.addActionListener(this);
 		maleRadio = new JRadioButton("Hombre");
 		maleRadio.setActionCommand("Hombre");
+		maleRadio.setBackground(Color.white);
 		femaleRadio = new JRadioButton("Mujer");
 		femaleRadio.setActionCommand("Mujer");
+		femaleRadio.setBackground(Color.white);
 		otherGender = new JRadioButton("Otro");
+		otherGender.setBackground(Color.white);
 		otherGender.setActionCommand("Otro");		
 		
 		otherGender.setSelected(true);
@@ -71,6 +100,8 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 		genderGroup.add(maleRadio);
 		genderGroup.add(femaleRadio);
 		genderGroup.add(otherGender);
+		
+		setBackground(Color.white);		
 		
 		Border innerBorder = BorderFactory.createTitledBorder("Registro");
 		Border outerBorder = BorderFactory.createEmptyBorder(5,5,5,5);
@@ -84,83 +115,88 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 		gc.fill = GridBagConstraints.NONE;
 		gc.anchor = GridBagConstraints.LINE_START;
 		
-		// First Row
-		gc.gridy = 0;
 		gc.gridx = 0;
+		gc.gridy = 0;
+		gc.anchor = GridBagConstraints.CENTER;
+		add(registerFPButton, gc);
+		
+		// Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.LINE_START;
 		add(firstNameLabel, gc);
 		
-		gc.gridx = 1;
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.CENTER;
 		add(firstNameField, gc);
 		
-		// Second Row
+		// Next Row
 		gc.gridy++;
-		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.LINE_START;
 		add(lastNameLabel, gc);
 		
-		gc.gridx = 1;
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.CENTER;
 		add(lastNameField, gc);
 		
-		// Third Row
+		//Next Row
 		gc.gridy++;
-		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.LINE_START;
 		add(birthDateLabel, gc);
 		
-		gc.gridx = 1;
-		add(birthDateCalendar, gc);
-		
-		// Fourth Row
-		gc.weighty = 0.01;
+		//Next Row
 		gc.gridy++;
-		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.CENTER;
+		add(birthDateChooser, gc);
+		
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.LINE_START;
 		add(genderLabel, gc);
 		
-		gc.gridx = 1;
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.CENTER;
+		gc.weighty = 0.01;
 		add(maleRadio, gc);
 		
 		// Next Row
 		gc.gridy++;
-		gc.gridx = 1;
 		add(femaleRadio, gc);
 		
 		// Next Row
 		gc.gridy++;
-		gc.gridx = 1;
 		add(otherGender, gc);
 		
-		// Next Row
-		gc.weighty = 0.1;
+		//Next Row
 		gc.gridy++;
-		
-		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.LINE_START;
+		gc.weighty = 0.1;
 		add(userNameLabel, gc);
 		
-		gc.gridx = 1;
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.CENTER;
 		add(userNameField, gc);
 		
-		// Next Row
+		//Next Row
 		gc.gridy++;
-		
-		gc.gridx = 0;
+		gc.anchor = GridBagConstraints.LINE_START;
 		add(passwordLabel, gc);
 		
-		gc.gridx = 1;
+		//Next Row
+		gc.gridy++;
+		gc.anchor = GridBagConstraints.CENTER;
 		add(passwordField, gc);
 		
-		// Next Row
+		//Next Row
 		gc.gridy++;
-		
-		gc.gridx = 0;
-		gc.anchor = GridBagConstraints.LINE_END;
-		add(registrationButton, gc);
-		
-		gc.gridx = 1;
 		gc.anchor = GridBagConstraints.CENTER;
-		add(registerFPButton, gc);
+		add(registrationButton, gc);
 
 	}
-	
-	
-	
+		
 	public void setRegistrationListener(RegistrationListener registrationListener) {
 		this.registrationListener = registrationListener;
 	}
@@ -186,7 +222,7 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 	}
 	
 	public Date getBirthDate() {
-		return birthDateCalendar.getDate();
+		return birthDateChooser.getDate();
 	}
 	
 	public String getGender() {
@@ -226,6 +262,10 @@ public class RegistrationPanel extends JPanel implements ActionListener {
 					return;
 				}
 				Date birthDate = getBirthDate();
+				if(birthDate==null) {
+					displayErrorMessage("Agrega tu fecha de nacimiento");
+					return;
+				}
 				String gender = getGender();
 				String userName = getUserName();
 				if(userName==null) {

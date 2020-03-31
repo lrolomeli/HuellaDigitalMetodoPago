@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import com.digitalpersona.onetouch.*;
 import com.digitalpersona.onetouch.capture.*;
 import com.digitalpersona.onetouch.capture.event.*;
@@ -31,37 +34,48 @@ public class DigitalPersona extends JDialog
     public DigitalPersona(Frame owner) {
     	//En cuanto se abria la ventana de verificacion se corria el metodo init y el metodo start
         super (owner, true);
-        setTitle("Verifique su huella");
-
+        setTitle("Registro de huella MyPay");
 		setLayout(new BorderLayout());
 		rootPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-		picture.setPreferredSize(new Dimension(240, 280));
+		setBackground(Color.DARK_GRAY);
+		
+		picture.setPreferredSize(new Dimension(150, 250));
 		picture.setBorder(BorderFactory.createLoweredBevelBorder());
-		prompt.setFont(UIManager.getFont("Panel.font"));
+		picture.setBackground(Color.DARK_GRAY);
+		prompt.setBackground(Color.DARK_GRAY);
+		prompt.setFont(new Font("Panel.font", Font.PLAIN, 14));
+		prompt.setForeground(Color.WHITE);
 		prompt.setEditable(false);
-		prompt.setColumns(40);
+		prompt.setColumns(30);
 		prompt.setMaximumSize(prompt.getPreferredSize());
 		prompt.setBorder(
 				BorderFactory.createCompoundBorder(
-					BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), "Prompt:"),
+					BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 5, 10), "Indicaciones:",
+							TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Panel.font", Font.PLAIN, 12), Color.WHITE),
 					BorderFactory.createLoweredBevelBorder()
 				));
-		log.setColumns(40);
+		log.setBackground(Color.DARK_GRAY);
+		log.setForeground(Color.WHITE);
+		log.setColumns(30);
 		log.setEditable(false);
-		log.setFont(UIManager.getFont("Panel.font"));
+		log.setFont(new Font("Panel.font", Font.PLAIN, 14));
 		JScrollPane logpane = new JScrollPane(log);
+		logpane.setBackground(Color.DARK_GRAY);
 		logpane.setBorder(
 				BorderFactory.createCompoundBorder(
-					BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), "Status:"),
+					BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 5, 10), "Estado:",
+							TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Panel.font", Font.PLAIN, 12), Color.WHITE),
 					BorderFactory.createLoweredBevelBorder()
 				));
-		
+		status.setBackground(Color.DARK_GRAY);
+		status.setForeground(Color.WHITE);
 		status.setEditable(false);
 		status.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		status.setFont(UIManager.getFont("Panel.font"));
 		
 		JButton quit = new JButton("Cerrar");
+		quit.setBackground(Color.DARK_GRAY);
+		quit.setForeground(Color.WHITE);
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	clean();
@@ -77,18 +91,18 @@ public class DigitalPersona extends JDialog
 		});
 
 		JPanel right = new JPanel(new BorderLayout());
-		right.setBackground(Color.getColor("control"));
+		right.setBackground(Color.DARK_GRAY);
 		right.add(prompt, BorderLayout.PAGE_START);
 		right.add(logpane, BorderLayout.CENTER);
 
 		JPanel center = new JPanel(new BorderLayout());
-		center.setBackground(Color.getColor("control"));
-		center.add(right, BorderLayout.CENTER);
-		center.add(picture, BorderLayout.LINE_START);
-		center.add(status, BorderLayout.PAGE_END);
-			
+		center.setBackground(Color.DARK_GRAY);
+		center.add(right, BorderLayout.LINE_START);
+		center.add(picture, BorderLayout.CENTER);
+		center.add(status, BorderLayout.AFTER_LAST_LINE);
+		
 		JPanel bottom = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-		bottom.setBackground(Color.getColor("control"));
+		bottom.setBackground(Color.LIGHT_GRAY);
 		bottom.add(quit);
 
 		setLayout(new BorderLayout());

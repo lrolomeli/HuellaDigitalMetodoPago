@@ -38,6 +38,82 @@ public class Database {
 		
 	}
 	
+	public String login(int account, String password) throws SQLException {
+		String nombre = null;
+		String apellido = null;
+		final String getLogin = "select nombre, apellido from Usuario where idUsuario = ? AND contrasena = ?";
+		PreparedStatement login=null;
+		
+		
+		login = conn.prepareStatement(getLogin);
+		login.setInt(1, account);
+		login.setString(2, password);
+		
+		ResultSet rs = login.executeQuery();
+		
+		if(rs.next()) {
+			nombre = rs.getString("nombre");
+			apellido = rs.getString("apellido");
+			return nombre+" "+apellido;
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	public boolean transfer(float saldoSrc, float saldoDest, float cantidad, int idUsuario, int cuentaDestino) throws SQLException {
+		boolean bool = false;
+		final String updateUser = "update Usuario set saldo = ? where idUsuario = ?";
+		final String insertTran = "insert into Movimiento(registro, tipo, cantidad, idUsuario_fk, operacion) values(CURRENT_TIMESTAMP,?,?,?,?)";
+		PreparedStatement uu=null, it=null;
+		float nuevoSaldoSrc = saldoSrc-cantidad;
+		float nuevoSaldoDest = saldoDest+cantidad;
+
+    	conn.setAutoCommit(false);
+    	try {
+            uu = conn.prepareStatement(updateUser);
+            
+            uu.setFloat(1, nuevoSaldoSrc);
+            uu.setInt(2, idUsuario);
+            uu.executeUpdate();
+            
+            uu.setFloat(1, nuevoSaldoDest);
+            uu.setInt(2, cuentaDestino);
+            uu.executeUpdate();
+            
+    		it = conn.prepareStatement(insertTran);
+    		it.setBoolean(1, false);
+    		it.setFloat(2, cantidad);
+    		it.setInt(3, idUsuario);
+    		it.setString(4, "Transferencia");
+    		it.execute();
+
+    		it.setBoolean(1, true);
+    		it.setFloat(2, cantidad);
+    		it.setInt(3, cuentaDestino);
+    		it.setString(4, "Transferencia");
+    		it.execute();
+    		
+    		conn.commit();
+    		bool = true;
+		}catch (Exception e) {
+			conn.rollback();
+		}finally {
+			if(uu!=null) {
+				uu.close();
+			}
+			if(it!=null) {
+				it.close();
+			}
+			
+		}
+		
+		
+		
+		return bool;
+	}
+	
 	public Float getSaldo(int idUsuario) throws SQLException {
 		Float f = null;
         Statement st = conn.createStatement();
@@ -65,10 +141,9 @@ public class Database {
 	
 	public boolean transaction(int idUsuario, float saldo, float cantidad, boolean tipo) throws SQLException {
 		final String updateUser = "update Usuario set saldo = ? where idUsuario = ?";
-		final String insertTran = "insert into Movimiento(registro, tipo, cantidad, idUsuario_fk, operacion) values(CURRENT_TIMESTAMP,?,?,?,?)";
+		final String insertTran = "insert into Movimiento(registro, tipo, cantidad, idUsuario_fk) values(CURRENT_TIMESTAMP,?,?,?)";
 		PreparedStatement uu=null, it=null;
 		float nuevoSaldo = (tipo) ? saldo+cantidad : saldo-cantidad;
-		String operacion = (tipo) ? "Recarga" : "Cobro";
 		boolean bool = false;
     	conn.setAutoCommit(false);
     	try {
@@ -82,7 +157,6 @@ public class Database {
     		it.setBoolean(1, tipo);
     		it.setFloat(2, cantidad);
     		it.setInt(3, idUsuario);
-    		it.setString(4, operacion);
     		it.execute();
     		conn.commit();
     		bool = true;

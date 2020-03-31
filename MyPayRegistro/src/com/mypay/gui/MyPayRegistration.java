@@ -18,9 +18,9 @@ public class MyPayRegistration extends JFrame {
 	private HuellaLista huellaLista;
 	
 	public MyPayRegistration() {
-		super("MyPay Registration");
+		super("Registro My Pay");
 		
-		
+		setBackground(Color.DARK_GRAY);
 		registrationPanel = new RegistrationPanel();
 		controller = new Controller();
 		fingerPrintReader = new FingerPrintReader(MyPayRegistration.this);
@@ -35,11 +35,12 @@ public class MyPayRegistration extends JFrame {
 		
 		add(registrationPanel);
 		
-		setSize(400, 750);
-		Dimension dim = new Dimension(400, 750);
+		setSize(350, 700);
+		Dimension dim = new Dimension(350, 700);
 		setMinimumSize(dim);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}	
 	
